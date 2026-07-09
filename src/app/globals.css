@@ -1,0 +1,23 @@
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font-family: system-ui, sans-serif;
+  margin: 0;
+  padding: 2rem;
+  max-width: 640px;
+  margin-inline: auto;
+  line-height: 1.5;
+}
+h1 { font-size: 1.4rem; }
+.grid { display: grid; gap: 4px; margin: 1rem 0; width: max-content; }
+.grid input {
+  width: 2.5rem; height: 2.5rem; text-align: center; text-transform: uppercase;
+  font-size: 1rem; border: 1px solid #8888; border-radius: 6px;
+}
+.controls { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+button { padding: .5rem 1rem; border-radius: 6px; border: 1px solid #8888; cursor: pointer; }
+.result { margin-top: 1rem; font-weight: 600; }
+.result.mutant { color: #16a34a; }
+.result.human { color: #dc2626; }
+.result.error { color: #d97706; }
+.stats { margin-top: 2rem; font-size: .9rem; opacity: .85; }

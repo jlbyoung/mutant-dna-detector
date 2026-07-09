@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model DnaRecord {
+  dnaHash   String   @id @map("dna_hash")
+  isMutant  Boolean  @map("is_mutant")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("dna_records")
+}
+
+model StatsCounter {
+  id          Int    @id @default(1)
+  mutantCount BigInt @default(0) @map("mutant_count")
+  humanCount  BigInt @default(0) @map("human_count")
+
+  @@map("stats_counters")
+}
