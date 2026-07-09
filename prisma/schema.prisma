@@ -9,6 +9,7 @@ datasource db {
 
 model DnaRecord {
   dnaHash   String   @id @map("dna_hash")
+  dna       String   @map("dna")
   isMutant  Boolean  @map("is_mutant")
   createdAt DateTime @default(now()) @map("created_at")
 

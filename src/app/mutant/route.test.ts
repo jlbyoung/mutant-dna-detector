@@ -8,17 +8,17 @@ const { recordDna } = vi.hoisted(() => {
 
 vi.mock("@/lib/infra/repository", () => ({ recordDna }));
 
-import { POST } from "@/app/api/mutant/route";
+import { POST } from "@/app/mutant/route";
 
 function post(body: unknown): Request {
-  return new Request("http://localhost/api/mutant", {
+  return new Request("http://localhost/mutant", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(body),
   });
 }
 
-describe("POST /api/mutant", () => {
+describe("POST /mutant", () => {
   beforeEach(() => recordDna.mockReset());
 
   it("returns 200 for a mutant and persists it", async () => {
@@ -26,14 +26,14 @@ describe("POST /api/mutant", () => {
     const res = await POST(post({ dna }));
     expect(res.status).toBe(200);
     expect(recordDna).toHaveBeenCalledOnce();
-    expect(recordDna).toHaveBeenCalledWith(expect.any(String), true);
+    expect(recordDna).toHaveBeenCalledWith(dna, true);
   });
 
   it("returns 403 for a human and persists it", async () => {
     const dna = ["ATGC", "CAGT", "TTAT", "AGAA"];
     const res = await POST(post({ dna }));
     expect(res.status).toBe(403);
-    expect(recordDna).toHaveBeenCalledWith(expect.any(String), false);
+    expect(recordDna).toHaveBeenCalledWith(dna, false);
   });
 
   it("returns 400 for malformed input and does NOT persist", async () => {
@@ -48,7 +48,7 @@ describe("POST /api/mutant", () => {
   });
 
   it("returns 400 for invalid JSON", async () => {
-    const req = new Request("http://localhost/api/mutant", {
+    const req = new Request("http://localhost/mutant", {
       method: "POST",
       body: "not json",
     });

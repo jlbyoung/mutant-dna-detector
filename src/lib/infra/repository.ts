@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/infra/prisma";
+import { hashDna } from "@/lib/infra/hash";
 
 /**
  * Persists a DNA verification exactly once. The dna_hash primary key enforces
@@ -7,14 +8,15 @@ import { prisma } from "@/lib/infra/prisma";
  * treat the call as an idempotent no-op and do NOT touch the counters. The
  * insert + counter increment run in one transaction so they cannot diverge.
  */
-export async function recordDna(dnaHash: string, mutant: boolean): Promise<void> {
+export async function recordDna(dna: string[], mutant: boolean): Promise<void> {
+  const dnaHash = hashDna(dna);
   try {
     // Idempotency relies on the dna_hash PK: a concurrent duplicate insert blocks
     // on the unique index and then fails with P2002 (under READ COMMITTED), so the
     // counter is incremented exactly once. Prisma does not auto-retry interactive
     // transactions, so there is no double-count.
     await prisma.$transaction(async (tx) => {
-      await tx.dnaRecord.create({ data: { dnaHash, isMutant: mutant } });
+      await tx.dnaRecord.create({ data: { dnaHash, dna: dna.join("\n"), isMutant: mutant } });
       await tx.statsCounter.update({
         where: { id: 1 },
         data: mutant

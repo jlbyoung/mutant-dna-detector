@@ -9,6 +9,8 @@ describe("recordDna error handling", () => {
   it("re-throws errors that are not a P2002 unique-violation", async () => {
     const boom = new Error("connection lost");
     $transaction.mockRejectedValue(boom);
-    await expect(recordDna("hash-x", true)).rejects.toThrow("connection lost");
+    await expect(recordDna(["ATCG", "ATCG", "ATCG", "ATCG"], true)).rejects.toThrow(
+      "connection lost",
+    );
   });
 });

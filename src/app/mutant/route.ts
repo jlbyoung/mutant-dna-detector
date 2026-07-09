@@ -1,6 +1,5 @@
 import { isMutant } from "@/lib/domain/isMutant";
 import { validateDna, InvalidDnaError } from "@/lib/domain/validateDna";
-import { hashDna } from "@/lib/infra/hash";
 import { recordDna } from "@/lib/infra/repository";
 
 export async function POST(req: Request): Promise<Response> {
@@ -23,7 +22,7 @@ export async function POST(req: Request): Promise<Response> {
   }
 
   const mutant = isMutant(dna);
-  await recordDna(hashDna(dna), mutant);
+  await recordDna(dna, mutant);
 
   return new Response(null, { status: mutant ? 200 : 403 });
 }

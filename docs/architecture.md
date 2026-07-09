@@ -1,9 +1,45 @@
 # Architecture
 
+```mermaid
+flowchart LR
+    Browser["Browser<br/>DNA grid + stats UI"]
+
+    subgraph App["Next.js Route Handlers"]
+        direction TB
+        MutantRoute["POST /mutant"]
+        StatsRoute["GET /stats"]
+    end
+
+    subgraph Domain["Domain (pure, no I/O)"]
+        direction TB
+        ValidateDna["validateDna()"]
+        IsMutant["isMutant()"]
+    end
+
+    subgraph Infra["Infrastructure"]
+        direction TB
+        HashDna["hashDna()"]
+        Repository["repository:<br/>recordDna() / getStats()"]
+    end
+
+    DB[("PostgreSQL<br/>dna_records (dna_hash PK)<br/>stats_counters (1 row)")]
+
+    Browser -- "POST /mutant<br/>{ dna: string[] }" --> MutantRoute
+    MutantRoute --> ValidateDna --> IsMutant
+    IsMutant --> HashDna --> Repository
+    Repository -- "idempotent write<br/>(dna_hash PK, P2002 = no-op)" --> DB
+    MutantRoute -- "200 mutant / 403 human / 400 invalid" --> Browser
+
+    Browser -- "GET /stats" --> StatsRoute
+    StatsRoute --> Repository
+    Repository -- "O(1) counter read<br/>(no COUNT(*))" --> DB
+    StatsRoute -- "{ count_mutant_dna, count_human_dna, ratio }" --> Browser
 ```
-┌─────────────┐   POST /api/mutant     ┌────────────────────────────┐
+
+```
+┌─────────────┐   POST /mutant         ┌────────────────────────────┐
 │  Browser    │ ─────────────────────▶ │  Next.js Route Handlers    │
-│  DNA grid   │   GET  /api/stats      │  (application layer)       │
+│  DNA grid   │   GET  /stats          │  (application layer)       │
 │  + stats UI │ ◀───────────────────── │  ├─ validateDna()          │
 └─────────────┘                        │  ├─ isMutant()  (domain)   │
                                         │  ├─ hashDna() + recordDna()│
@@ -19,7 +55,7 @@
 
 ## Layers
 - **Domain** (`src/lib/domain`): pure `isMutant` + `validateDna`. No I/O.
-- **Application** (`src/app/api`): HTTP contract, orchestration.
+- **Application** (`src/app/mutant`, `src/app/stats`): HTTP contract, orchestration.
 - **Infrastructure** (`src/lib/infra`): Prisma repository, hashing.
 
 ## Key decisions

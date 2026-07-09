@@ -10,7 +10,8 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "html"],
-      include: ["src/lib/**", "src/app/api/**"],
+      include: ["src/**"],
+      exclude: ["**/*.test.*", "src/app/layout.tsx"],
     },
   },
   resolve: {

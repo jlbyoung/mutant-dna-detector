@@ -21,7 +21,7 @@ export default function Home() {
   const [busy, setBusy] = useState(false);
 
   async function refreshStats() {
-    const res = await fetch("/api/stats");
+    const res = await fetch("/stats");
     if (res.ok) setStats(await res.json());
   }
 
@@ -42,7 +42,7 @@ export default function Home() {
     }
     setBusy(true);
     try {
-      const res = await fetch("/api/mutant", {
+      const res = await fetch("/mutant", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ dna }),

@@ -25,12 +25,12 @@ npm run dev
 
 ## API
 
-`POST /api/mutant` → `200` mutant, `403` human, `400` malformed
+`POST /mutant` → `200` mutant, `403` human, `400` malformed
 ```json
 { "dna": ["ATGCGA","CAGTGC","TTATGT","AGAAGG","CCCCTA","TCACTG"] }
 ```
 
-`GET /api/stats`
+`GET /stats`
 ```json
 { "count_mutant_dna": 40, "count_human_dna": 100, "ratio": 0.4 }
 ```
